@@ -4,7 +4,7 @@ import { Settings } from './components/Settings'
 import { Search } from './components/Search'
 import { PrintCard } from './components/PrintCard'
 import { configureClient, getAppSettings, SearchItem } from './api/client'
-import logo from './assets/centrric logo.png'
+import logo from './assets/cen print.png'
 
 function App() {
   const [showSettings, setShowSettings] = useState(false)
