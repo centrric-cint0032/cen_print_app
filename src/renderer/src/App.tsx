@@ -5,6 +5,7 @@ import { Search } from './components/Search'
 import { PrintCard } from './components/PrintCard'
 import { configureClient, getAppSettings, SearchItem } from './api/client'
 import logo from './assets/cen print.png'
+import bigLogo from './assets/big-logo.png'
 
 function App() {
   const [showSettings, setShowSettings] = useState(false)
@@ -56,29 +57,29 @@ function App() {
   }
 
   if (loading) {
-    return <div className="flex h-screen bg-gray-900" />
+    return <div className="flex h-screen bg-white" />
   }
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-gray-900 text-white relative">
+    <div className="flex flex-col h-screen w-screen bg-white text-slate-900 relative">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-gray-800 bg-gray-950/50 backdrop-blur-md">
+      <header className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white shadow-sm">
         <div className="flex items-center gap-3">
-          <img src={logo} alt="Centrric Logo" className="h-8 w-auto object-contain" />
-          <h1 className="text-xl font-semibold tracking-tight text-gray-100">
+          {/* <img src={logo} alt="Centrric Logo" className="h-8 w-auto object-contain" /> */}
+          <h1 className="text-xl font-semibold tracking-tight text-[#014C85]">
             Cen Barcode Printer
           </h1>
         </div>
 
         <div className="flex items-center gap-4">
           {companyName && companyName !== 'Cen Print' && (
-            <div className="text-sm font-medium text-gray-400 hidden sm:block">
+            <div className="text-sm font-medium text-slate-500 hidden sm:block">
               {companyName}
             </div>
           )}
           <button
             onClick={() => setShowSettings(true)}
-            className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-all"
+            className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
             title="Settings"
           >
             <SettingsIcon size={20} />
@@ -90,8 +91,8 @@ function App() {
       <main className="flex-1 flex flex-col items-center justify-center p-8">
         {!isConfigured ? (
           <div className="text-center space-y-4 max-w-md">
-            <h2 className="text-2xl font-bold text-gray-200">App Not Configured</h2>
-            <p className="text-gray-400">Please click the settings icon or wait for the configuration screen to set up your ERPNext connection and Printer.</p>
+            <h2 className="text-2xl font-bold text-slate-900">App Not Configured</h2>
+            <p className="text-slate-600">Please click the settings icon or wait for the configuration screen to set up your ERPNext connection and Printer.</p>
             <button
               onClick={() => setShowSettings(true)}
               className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
@@ -106,20 +107,21 @@ function App() {
               <div className="w-full max-w-2xl text-left">
                 <button
                   onClick={() => setSelectedItem(null)}
-                  className="mb-4 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                  className="mb-4 flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors"
                 >
                   <ArrowLeft size={20} /> Back to Search
                 </button>
                 <PrintCard item={selectedItem} templateName={defaultTemplate} />
               </div>
             ) : (
-              <>
-                <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
-                  Ready to Print
+              <div className="flex flex-col items-center -mt-16 w-full">
+                <img src={bigLogo} alt="Main Logo" className="h-48 mb-4 object-contain" />
+                <h2 className="text-3xl font-bold tracking-tight text-[#014C85]">
+                  Ready to Print?
                 </h2>
-                <p className="text-gray-400">Search for the items to print.</p>
+                <p className="text-slate-500">Search for the items to print.</p>
                 <Search onSelect={setSelectedItem} />
-              </>
+              </div>
             )}
 
           </div>
