@@ -5,14 +5,12 @@ import { Search } from './components/Search'
 import { PrintCard } from './components/PrintCard'
 import { configureClient, getAppSettings, SearchItem, checkAuthStatus, logoutFromERP } from './api/client'
 import { Login } from './components/Login'
-import logo from './assets/cen print.png'
 import bigLogo from './assets/big-logo.png'
 
 function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [isConfigured, setIsConfigured] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [companyName, setCompanyName] = useState('Cen Print')
   const [defaultTemplate, setDefaultTemplate] = useState('')
   const [selectedItem, setSelectedItem] = useState<SearchItem | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -22,7 +20,7 @@ function App() {
       // @ts-ignore
       const settings = await window.api.getSettings()
       if (settings.erpBaseUrl && settings.printerName) {
-        configureClient(settings.erpBaseUrl)
+        configureClient()
         setIsConfigured(true)
         
         const authStatus = await checkAuthStatus()
@@ -49,7 +47,6 @@ function App() {
       getAppSettings()
         .then(data => {
           if (data && data.message) {
-            if (data.message.company_name) setCompanyName(data.message.company_name);
             if (data.message.default_template) setDefaultTemplate(data.message.default_template);
           }
         })

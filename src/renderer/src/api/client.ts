@@ -17,7 +17,7 @@ export interface SearchItemsResponse {
   message: SearchItem[];
 }
 
-export const configureClient = (baseUrl: string) => {
+export const configureClient = () => {
   // No-op: The main process IPC proxy reads the baseUrl directly from settings.
 };
 

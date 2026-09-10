@@ -18,14 +18,14 @@ export async function getSettings(): Promise<AppSettings> {
     const parsed = JSON.parse(data);
 
     return {
-      erpBaseUrl: parsed.erpBaseUrl || '',
+      erpBaseUrl: parsed.erpBaseUrl || 'https://akbar-pos.centroerp.biz/',
       printerName: parsed.printerName || '',
       priceList: parsed.priceList || '',
     };
   } catch (error) {
-    // If file doesn't exist or can't be read, return default empty settings
+    // If file doesn't exist or can't be read, return default settings
     return {
-      erpBaseUrl: '',
+      erpBaseUrl: 'https://akbar-pos.centroerp.biz/',
       printerName: '',
       priceList: '',
     };
