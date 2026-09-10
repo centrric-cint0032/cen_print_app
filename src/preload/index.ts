@@ -7,7 +7,13 @@ const api = {
   getSettings: () => ipcRenderer.invoke('get-settings'),
   saveSettings: (settings: any) => ipcRenderer.invoke('save-settings', settings),
   getPrinters: () => ipcRenderer.invoke('get-printers'),
-  printRaw: (data: string, printerName: string) => ipcRenderer.invoke('print-raw', data, printerName)
+  printRaw: (data: string, printerName: string) => ipcRenderer.invoke('print-raw', data, printerName),
+  
+  // Auth & Proxy APIs
+  loginRequest: (credentials: any) => ipcRenderer.invoke('login-request', credentials),
+  checkAuth: () => ipcRenderer.invoke('check-auth'),
+  logoutRequest: () => ipcRenderer.invoke('logout-request'),
+  proxyRequest: (config: any) => ipcRenderer.invoke('proxy-request', config)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell } from 'electron'
 import { join } from 'path'
 import { registerSettingsHandlers } from './settings'
+import { registerAuthHandlers } from './auth'
 
 // Disable hardware acceleration for better stability on some systems, if needed.
 // app.disableHardwareAcceleration()
@@ -41,6 +42,7 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   registerSettingsHandlers()
+  registerAuthHandlers()
   createWindow()
 
   app.on('activate', function () {

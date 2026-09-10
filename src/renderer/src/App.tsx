@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Settings as SettingsIcon, ArrowLeft } from 'lucide-react'
+import { Settings as SettingsIcon, ArrowLeft, LogOut } from 'lucide-react'
 import { Settings } from './components/Settings'
 import { Search } from './components/Search'
 import { PrintCard } from './components/PrintCard'
-import { configureClient, getAppSettings, SearchItem } from './api/client'
+import { configureClient, getAppSettings, SearchItem, checkAuthStatus, logoutFromERP } from './api/client'
+import { Login } from './components/Login'
 import logo from './assets/cen print.png'
 import bigLogo from './assets/big-logo.png'
 
@@ -14,6 +15,7 @@ function App() {
   const [companyName, setCompanyName] = useState('Cen Print')
   const [defaultTemplate, setDefaultTemplate] = useState('')
   const [selectedItem, setSelectedItem] = useState<SearchItem | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const checkConfiguration = async () => {
     try {
@@ -22,8 +24,12 @@ function App() {
       if (settings.erpBaseUrl && settings.printerName) {
         configureClient(settings.erpBaseUrl)
         setIsConfigured(true)
+        
+        const authStatus = await checkAuthStatus()
+        setIsAuthenticated(authStatus)
       } else {
         setIsConfigured(false)
+        setIsAuthenticated(false)
         setShowSettings(true) // Force settings if not configured
       }
     } catch (e) {
@@ -38,7 +44,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (isConfigured) {
+    if (isConfigured && isAuthenticated) {
       // Fetch Cold Start data
       getAppSettings()
         .then(data => {
@@ -49,7 +55,7 @@ function App() {
         })
         .catch(err => console.error("Failed to fetch app settings from ERPNext", err));
     }
-  }, [isConfigured])
+  }, [isConfigured, isAuthenticated])
 
   const handleSettingsClose = () => {
     setShowSettings(false)
@@ -77,6 +83,18 @@ function App() {
               {companyName}
             </div>
           )}
+          {isAuthenticated && (
+            <button
+              onClick={async () => {
+                await logoutFromERP();
+                setIsAuthenticated(false);
+              }}
+              className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+              title="Logout"
+            >
+              <LogOut size={20} />
+            </button>
+          )}
           <button
             onClick={() => setShowSettings(true)}
             className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
@@ -100,6 +118,8 @@ function App() {
               Configure Now
             </button>
           </div>
+        ) : !isAuthenticated ? (
+          <Login onLoginSuccess={() => setIsAuthenticated(true)} />
         ) : (
           <div className="text-center space-y-4 w-full flex flex-col items-center">
 
