@@ -7,6 +7,7 @@ import os from 'os';
 export interface AppSettings {
   erpBaseUrl: string;
   printerName: string;
+  priceList: string;
 }
 
 const SETTINGS_FILE = path.join(app.getPath('userData'), 'cen_print_settings.json');
@@ -19,12 +20,14 @@ export async function getSettings(): Promise<AppSettings> {
     return {
       erpBaseUrl: parsed.erpBaseUrl || '',
       printerName: parsed.printerName || '',
+      priceList: parsed.priceList || '',
     };
   } catch (error) {
     // If file doesn't exist or can't be read, return default empty settings
     return {
       erpBaseUrl: '',
       printerName: '',
+      priceList: '',
     };
   }
 }
@@ -34,6 +37,7 @@ export async function saveSettings(settings: AppSettings): Promise<boolean> {
     const dataToSave = {
       erpBaseUrl: settings.erpBaseUrl,
       printerName: settings.printerName,
+      priceList: settings.priceList,
     };
 
     await fs.writeFile(SETTINGS_FILE, JSON.stringify(dataToSave, null, 2), 'utf-8');

@@ -78,11 +78,7 @@ function App() {
         </div>
 
         <div className="flex items-center gap-4">
-          {companyName && companyName !== 'Cen Print' && (
-            <div className="text-sm font-medium text-slate-500 hidden sm:block">
-              {companyName}
-            </div>
-          )}
+
           {isAuthenticated && (
             <button
               onClick={async () => {

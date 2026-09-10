@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Save, ArrowLeft, Printer } from 'lucide-react';
+import { Settings as SettingsIcon, Save, ArrowLeft, Printer, CheckCircle2 } from 'lucide-react';
+import { getAllowedPriceLists } from '../api/client';
 
 interface AppSettings {
   erpBaseUrl: string;
   printerName: string;
+  priceList?: string;
 }
 
 interface PrinterInfo {
@@ -17,9 +19,11 @@ interface PrinterInfo {
 export function Settings({ onClose }: { onClose: () => void }) {
   const [settings, setSettings] = useState<AppSettings>({
     erpBaseUrl: '',
-    printerName: ''
+    printerName: '',
+    priceList: ''
   });
   const [printers, setPrinters] = useState<PrinterInfo[]>([]);
+  const [priceLists, setPriceLists] = useState<{name: string}[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -32,8 +36,19 @@ export function Settings({ onClose }: { onClose: () => void }) {
         // @ts-ignore
         const availablePrinters = await window.api.getPrinters();
         
-        setSettings(savedSettings);
+        setSettings({
+          erpBaseUrl: savedSettings.erpBaseUrl || '',
+          printerName: savedSettings.printerName || '',
+          priceList: savedSettings.priceList || ''
+        });
         setPrinters(availablePrinters);
+
+        try {
+          const pl = await getAllowedPriceLists();
+          if (pl && pl.message) setPriceLists(pl.message);
+        } catch (e) {
+          console.warn("Could not load price lists (might not be logged in)");
+        }
       } catch (error) {
         console.error("Failed to load settings:", error);
       } finally {
@@ -118,6 +133,39 @@ export function Settings({ onClose }: { onClose: () => void }) {
                 </option>
               ))}
             </select>
+          </div>
+
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-slate-700">
+              Selling Price List
+            </label>
+            {priceLists.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+                {priceLists.map((pl, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setSettings({...settings, priceList: pl.name})}
+                    className={`relative p-4 rounded-xl border-2 text-left transition-all ${
+                      settings.priceList === pl.name 
+                        ? 'border-[#014C85] bg-blue-50/50 shadow-sm' 
+                        : 'border-slate-100 hover:border-blue-200 bg-white'
+                    }`}
+                  >
+                    {settings.priceList === pl.name && (
+                      <CheckCircle2 className="absolute top-3 right-3 text-[#014C85]" size={18} />
+                    )}
+                    <span className={`block font-medium text-sm ${settings.priceList === pl.name ? 'text-[#014C85]' : 'text-slate-700'}`}>
+                      {pl.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl text-sm text-slate-500 text-center">
+                Log in first to load price lists.
+              </div>
+            )}
           </div>
 
           {message && (

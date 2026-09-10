@@ -25,7 +25,9 @@ export function PrintCard({ item, templateName }: PrintCardProps) {
       setLoading(true);
       setError('');
       try {
-        const data = await getPrintPayload(item.item_code, templateName);
+        // @ts-ignore
+        const settings = await window.api.getSettings();
+        const data = await getPrintPayload(item.item_code, templateName, settings.priceList);
         if (data && data.message) {
           setTemplateString(data.message.template);
           setRate(data.message.standard_selling_rate);

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { loginToERP } from '../api/client';
-import { Loader2, LogIn } from 'lucide-react';
+import { loginToERP, getAllowedPriceLists } from '../api/client';
+import { Loader2, LogIn, Eye, EyeOff } from 'lucide-react';
 import logo from '../assets/big-logo.png';
 
 interface LoginProps {
@@ -12,6 +12,7 @@ export function Login({ onLoginSuccess }: LoginProps) {
   const [pwd, setPwd] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +26,23 @@ export function Login({ onLoginSuccess }: LoginProps) {
 
     try {
       await loginToERP(usr, pwd);
+
+      // Auto-select first price list if none is configured
+      try {
+        // @ts-ignore
+        const currentSettings = await window.api.getSettings();
+        if (!currentSettings.priceList) {
+          const pl = await getAllowedPriceLists();
+          if (pl && pl.message && pl.message.length > 0) {
+            currentSettings.priceList = pl.message[0].name;
+            // @ts-ignore
+            await window.api.saveSettings(currentSettings);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not set default price list automatically", err);
+      }
+
       onLoginSuccess();
     } catch (err: any) {
       setError(err.message || 'Invalid login credentials.');
@@ -66,13 +84,23 @@ export function Login({ onLoginSuccess }: LoginProps) {
             <label className="block text-sm font-medium text-slate-700">
               Password
             </label>
-            <input
-              type="password"
-              value={pwd}
-              onChange={(e) => setPwd(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#014C85] focus:border-transparent transition-all"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={pwd}
+                onChange={(e) => setPwd(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-4 pr-12 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#014C85] focus:border-transparent transition-all"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
           <button

@@ -61,14 +61,27 @@ export interface PrintPayloadResponse {
   }
 }
 
-export const getPrintPayload = async (itemCode: string, templateName: string): Promise<PrintPayloadResponse> => {
+export const getPrintPayload = async (itemCode: string, templateName: string, priceList?: string): Promise<PrintPayloadResponse> => {
   const response = await proxyRequest({
     method: 'GET',
     url: '/api/method/cen_pos_barcode_config.desktop_printer.api.get_print_payload',
     params: {
       item_code: itemCode,
-      template_name: templateName
+      template_name: templateName,
+      ...(priceList ? { price_list: priceList } : {})
     }
+  });
+  return response.data;
+};
+
+export interface PriceListResponse {
+  message: { name: string }[];
+}
+
+export const getAllowedPriceLists = async (): Promise<PriceListResponse> => {
+  const response = await proxyRequest({
+    method: 'GET',
+    url: '/api/method/cen_pos_barcode_config.desktop_printer.api.get_allowed_selling_price_lists'
   });
   return response.data;
 };
